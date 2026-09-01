@@ -49,12 +49,12 @@ The command and refresh interval are set at the top of `contents/ui/main.qml`:
 
 ```qml
 readonly property string command:
-    "bash -lc 'npx --yes your-usage-tool --json 2>/dev/null'"
+    "bash -c 'export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; npx --yes your-usage-tool --json 2>/dev/null'"
 
 readonly property int intervalMs: 60 * 1000   // once a minute
 ```
 
-Point `command` at whatever produces your usage JSON. It's wrapped in `bash -lc` so your login shell's `PATH` is loaded — without that, the panel often can't find `npx`. If it still can't, use the absolute path to `npx` (find it with `which npx`).
+Point `command` at whatever produces your usage JSON. The panel runs it in a **non-interactive** shell, so `~/.bashrc` is skipped (the usual `case $- in *i*)` guard returns early) and anything it sets up — like nvm — is missing; `bash -lc` does not help here for the same reason. The default command sources `nvm.sh` explicitly. If you don't use nvm, replace that part with whatever puts `npx` on your `PATH`, or use the absolute path to `npx` (find it with `which npx`).
 
 After editing, run the `--upgrade` command above to apply the change.
 
@@ -70,10 +70,12 @@ After editing, run the `--upgrade` command above to apply the change.
 **The number shows `err`.** The command failed or didn't return valid JSON. Run the exact command from `main.qml` in a terminal to see the real output:
 
 ```bash
-bash -lc 'npx --yes your-usage-tool --json 2>/dev/null'
+env -i HOME=$HOME bash -c 'export NVM_DIR="$HOME/.nvm"; . "$NVM_DIR/nvm.sh"; npx --yes your-usage-tool --json'
 ```
 
-**`command not found` for npx.** Your panel's environment doesn't have Node on its `PATH`. Either keep the `bash -lc` wrapper (it loads your login profile) or hardcode the absolute path to `npx`.
+(`env -i` mimics the panel's bare environment; drop `2>/dev/null` so you see the real error.)
+
+**`command not found` for npx.** Your panel's environment doesn't have Node on its `PATH`, and non-interactive shells skip `~/.bashrc`. Source your Node version manager explicitly in the command (as the default does for nvm) or hardcode the absolute path to `npx`.
 
 **Changes don't appear after editing.** Run `kpackagetool6 --type Plasma/Applet --upgrade .`, then restart with `plasmashell --replace &`.
 

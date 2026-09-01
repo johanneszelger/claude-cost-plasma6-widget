@@ -12,12 +12,11 @@ PlasmoidItem {
     // ----------------------------------------------------------------
     // CONFIGURATION — edit these two lines
     // ----------------------------------------------------------------
-    // The command to run. It is wrapped in `bash -lc` so that your
-    // *login* PATH is loaded (nvm, fnm, asdf, /usr/local/bin, etc.),
-    // otherwise the panel may not be able to find `npx`.
-    // Replace `my-script` with your actual npx package/script.
+    // The command to run. The panel's shell is non-interactive, so
+    // ~/.bashrc (and with it nvm) is never loaded — source nvm.sh
+    // explicitly so `npx` is found regardless of the Node version.
     readonly property string command:
-    "bash -lc 'npx --yes ccusage@latest daily --json 2>/dev/null'"
+    "bash -c 'export NVM_DIR=\"$HOME/.nvm\"; . \"$NVM_DIR/nvm.sh\"; npx --yes ccusage@latest daily --json 2>/dev/null'"
 
     // How often to run it, in milliseconds.
     readonly property int intervalMs: 60 * 1000   // once a minute
