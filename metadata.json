@@ -1,0 +1,15 @@
+{
+    "KPlugin": {
+        "Id": "com.finidy.claudeCostWidget",
+        "Name": "Claude Cost Widget",
+        "Description": "Peridocially checks the Claude cost for today",
+        "Icon": "view-statistics",
+        "Category": "System Information",
+        "Authors": [
+            { "Name": "Johannes Zelger", "Email": "johannes.zelger@finidy.de" }
+        ],
+        "Version": "1"
+    },
+    "KPackageStructure": "Plasma/Applet",
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
